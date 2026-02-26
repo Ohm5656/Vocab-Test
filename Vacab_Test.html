@@ -112,7 +112,6 @@
         .wrong { background-color: var(--wrong) !important; border-color: var(--wrong) !important; color: white !important; }
         .wrong span { color: white !important; }
 
-        /* Flashcard Fixes */
         .flashcard {
             perspective: 1000px;
             height: 280px;
@@ -336,8 +335,8 @@
         document.getElementById('explanation').style.display = 'none';
         document.getElementById('next-btn').style.display = 'none';
         
-        const isEnToTh = Math.random() > 0.5;
-        document.getElementById('question-text').innerText = isEnToTh ? `"${item.en}" แปลว่าอะไร?` : `ข้อใดคือคำแปลของ "${item.th}"?`;
+        // บังคับถามอังกฤษ ตัวเลือกไทย
+        document.getElementById('question-text').innerText = `"${item.en}" แปลว่าอะไร?`;
         
         let options = [item];
         let others = vocabData.filter(v => v.en !== item.en);
@@ -350,8 +349,7 @@
         options.forEach((opt, idx) => {
             const btn = document.createElement('button');
             btn.className = 'btn option-btn';
-            const displayValue = isEnToTh ? opt.th : opt.en;
-            btn.innerHTML = `<span>${String.fromCharCode(65 + idx)}</span> ${displayValue}`;
+            btn.innerHTML = `<span>${String.fromCharCode(65 + idx)}</span> ${opt.th}`;
             btn.onclick = () => checkAnswer(opt.en === item.en, btn, item);
             container.appendChild(btn);
         });
@@ -368,9 +366,9 @@
     function toggleCard() {
         const area = document.getElementById('flashcard-area');
         if (area.classList.contains('flipped')) {
-            handleNext(); // ถ้าพลิกดูเฉลยแล้ว คลิกอีกครั้งให้ไปข้อถัดไป
+            handleNext();
         } else {
-            area.classList.add('flipped'); // ถ้ายังไม่พลิก ให้พลิกดูเฉลย
+            area.classList.add('flipped');
         }
     }
 
@@ -387,7 +385,7 @@
             isCorrectCurrent = false;
             const btns = document.querySelectorAll('.option-btn');
             btns.forEach(b => {
-                if (b.innerText.includes(item.en) || b.innerText.includes(item.th)) b.classList.add('correct');
+                if (b.innerText.includes(item.th)) b.classList.add('correct');
             });
         }
 
@@ -417,11 +415,9 @@
                 }
             }, 300);
         } else {
-            // โลจิกสำหรับ Quiz: ถ้าตอบผิด ย้ายไปท้ายคิว
             if (!isCorrectCurrent) {
                 const currentQuestion = questions.splice(currentIndex, 1)[0];
                 questions.push(currentQuestion);
-                // ไม่เพิ่ม currentIndex เพื่อให้ดึงข้อถัดมาเล่นต่อ
             } else {
                 currentIndex++;
             }
